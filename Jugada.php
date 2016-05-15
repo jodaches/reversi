@@ -4,7 +4,8 @@ class Jugada extends Casilla{
     private $cantidadConvertidas=0;
     private $categoria;
     private $punteo=0;
-    
+    private $punteoFuturo=0;
+    private $convertidas=array();
     
     function __construct($f,$c,$d){
         parent::__construct($f,$c);
@@ -18,16 +19,29 @@ class Jugada extends Casilla{
     public function getCategoria(){
         return $this->categoria;
     }
+    public function getConvertidas(){
+        return $this->convertidas;
+    }
     
     public function getPunteo(){
         return $this->punteo;
+    }
+    public function getPunteoFinal(){
+        $div=0;
+        if($this->punteoFuturo>=1)
+            $div=20/$this->punteoFuturo;
+        //return $this->punteo + $div + count($this->convertidas);
+        return 1500*$this->punteo+ (1000 - $this->punteoFuturo); // + 400*count($this->convertidas);
+    }
+    public function getPunteoFuturo(){
+        return $this->punteoFuturo;
     }
     public function setPunteo($punteo){
         $this->punteo=$punteo;
     }
     
     public function getCantidadConvertidas(){
-        return $this->cantidadConvertidas;
+        return count($this->convertidas);
     }
     
     public function evaluar($team){
@@ -41,7 +55,7 @@ class Jugada extends Casilla{
                     $f--;
                     if($m[$f][$c]==$team)
                         return true;
-                    $this->cantidadConvertidas++;    
+                    array_push($this->convertidas,new Casilla($f,$c));
                 }while($f>0 && $m[$f][$c]!=2);
                 break;
             case 'd':
@@ -49,7 +63,7 @@ class Jugada extends Casilla{
                     $f++;
                     if($m[$f][$c]==$team)
                         return true;
-                    $this->cantidadConvertidas++;
+                    array_push($this->convertidas,new Casilla($f,$c));
                 }while($f<7 && $m[$f][$c]!=2);
                 break;
             case 'l':
@@ -57,7 +71,7 @@ class Jugada extends Casilla{
                     $c--;
                     if($m[$f][$c]==$team)
                         return true;
-                    $this->cantidadConvertidas++;
+                    array_push($this->convertidas,new Casilla($f,$c));
                 }while($c>0 && $m[$f][$c]!=2);
                 break;
             case 'r':
@@ -65,7 +79,7 @@ class Jugada extends Casilla{
                     $c++;
                     if($m[$f][$c]==$team)
                         return true;
-                    $this->cantidadConvertidas++;
+                    array_push($this->convertidas,new Casilla($f,$c));
                 }while($c<7 && $m[$f][$c]!=2);
                 break;
             case 'ul':
@@ -74,7 +88,7 @@ class Jugada extends Casilla{
                     $c--;
                     if($m[$f][$c]==$team)
                         return true;
-                    $this->cantidadConvertidas++;
+                    array_push($this->convertidas,new Casilla($f,$c));
                 }while($f>0 && $c>0 && $m[$f][$c]!=2);
                 break;
             case 'ur':
@@ -83,7 +97,7 @@ class Jugada extends Casilla{
                     $c++;
                     if($m[$f][$c]==$team)
                         return true;
-                    $this->cantidadConvertidas++;
+                    array_push($this->convertidas,new Casilla($f,$c));
                 }while($f>0 && $c<7 && $m[$f][$c]!=2);
                 break;
             case 'dl':
@@ -92,7 +106,7 @@ class Jugada extends Casilla{
                     $c--;
                     if($m[$f][$c]==$team)
                         return true;
-                    $this->cantidadConvertidas++;
+                    array_push($this->convertidas,new Casilla($f,$c));
                 }while($f<7 && $c>0 && $m[$f][$c]!=2);
                 break;
             case 'dr':
@@ -101,7 +115,7 @@ class Jugada extends Casilla{
                     $c++;
                     if($m[$f][$c]==$team)
                         return true;
-                    $this->cantidadConvertidas++;
+                    array_push($this->convertidas,new Casilla($f,$c));
                 }while($f<7 && $c<7 && $m[$f][$c]!=2);
                 break;
             default:
@@ -124,23 +138,42 @@ class Jugada extends Casilla{
         
         $casilla= $this->getFila().$this->getColumna();
         
-        if(array_search($casilla,$esquinas)!=false)
-            $this->categoria="esquina";
-        elseif(array_search($casilla,$A)!=false)
-            $this->categoria="A";
-        elseif(array_search($casilla,$B)!=false)
-            $this->categoria="B";
-        elseif(array_search($casilla,$A2)!=false)
-            $this->categoria="A2";
-        elseif(array_search($casilla,$B2)!=false)
-            $this->categoria="B2";
-        elseif(array_search($casilla,$C2)!=false)
-            $this->categoria="C2";
-        elseif(array_search($casilla,$X2)!=false)
-            $this->categoria="X2";
-        elseif(array_search($casilla,$C)!=false)
-            $this->categoria="C";
-        elseif(array_search($casilla,$X)!=false)
-            $this->categoria="X";
+        if(array_search($casilla,$esquinas)!=false){
+            $this->categoria="esquina"; $this->punteo=13;
+        }elseif(array_search($casilla,$A)!=false){
+            $this->categoria="A"; $this->punteo=12;
+        }elseif(array_search($casilla,$B)!=false){
+            $this->categoria="B"; $this->punteo=11;
+        }elseif(array_search($casilla,$A2)!=false){
+            $this->categoria="A2"; $this->punteo=6;
+        }elseif(array_search($casilla,$B2)!=false){
+            $this->categoria="B2"; $this->punteo=5;
+        }elseif(array_search($casilla,$C2)!=false){
+            $this->categoria="C2"; $this->punteo=4;
+        }elseif(array_search($casilla,$X2)!=false){
+            $this->categoria="X2"; $this->punteo=3;
+        }elseif(array_search($casilla,$C)!=false){
+            $this->categoria="C"; $this->punteo=2;
+        }elseif(array_search($casilla,$X)!=false){
+            $this->categoria="X"; $this->punteo=1;
+        }
+    }
+    
+    public function puntuar($turno){
+        $turnoEnemigo = $turno;
+        $turnoEnemigo->setTeams($turno->getEquipoEnemigo());
+        $estadoSiguiente=$turno->getEstadoActual();
+        foreach($this->getConvertidas() as $casilla){
+            $estadoSiguiente[$casilla->getFila()][$casilla->getColumna()]=$turnoEnemigo->getEquipoEnemigo();
+        }
+        $turnoEnemigo->setEstadoActual($estadoSiguiente);
+        $turnoEnemigo->identificarPivotes();
+        $turnoEnemigo->identificarJugadas();
+        
+        $p=0;
+        foreach($turnoEnemigo->getJugadas() as $j){
+            $p=$p+$j->getPunteo();
+        }
+        $this->punteoFuturo=$p;
     }
 }

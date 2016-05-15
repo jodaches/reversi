@@ -16,7 +16,8 @@ $turno = new Turno($_GET['turno'],$_GET['estado']);
 Reversi::$Matriz=$turno->getEstadoActual();
 
 //evaluar posiciones enemigas con posibilidades para pivotear
-for($fila=0;$fila<8;$fila++){
+$turno->identificarPivotes();
+/*for($fila=0;$fila<8;$fila++){
     $columnas= array_keys(Reversi::$Matriz[$fila],$turno->getEquipoEnemigo());//enemigos por fila
     foreach ($columnas as $col){
         $pivote = new Pivote($fila,$col);
@@ -24,20 +25,22 @@ for($fila=0;$fila<8;$fila++){
             array_push($pivotes,$pivote);   
         }
     }
-}
+}*/
 
 //confirmar cuales de las posibles jugadas, sí son jugadas
-foreach($pivotes as $piv){
+$turno->identificarJugadas();
+/*foreach($pivotes as $piv){
     foreach($piv->getPosibilidades() as $pos){
         if($pos->evaluar($turno->getEquipoActual()))
             array_push($jugadas, $pos);   
     }
     //echo "Piv: ".$piv->getFila().$piv->getColumna()."<br>";
-}
+}*/
 
 //tomar la desicion
-if(count($jugadas)>0){
-    echo $turno->escogerJugada($jugadas);
+if(count($turno->getJugadas())>0){
+    $salida=$turno->escogerJugada();
+    echo $salida;
 }
 
 //la primera para ver si funciona lo demas
